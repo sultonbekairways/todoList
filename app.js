@@ -5,31 +5,8 @@ const tasks = [/*
     body:
       'Occaecat non ea quis occaecat ad culpa amet deserunt incididunt elit fugiat pariatur. Exercitation commodo culpa in veniam proident laboris in. Excepteur cupidatat eiusmod dolor consectetur exercitation nulla aliqua veniam fugiat irure mollit. Eu dolor dolor excepteur pariatur aute do do ut pariatur consequat reprehenderit deserunt.\r\n',
     title: 'Eu ea incididunt sunt consectetur fugiat non.',
-  },
-  {
-    _id: '5d2ca9e29c8a94095c1288e0',
-    completed: false,
-    body:
-      'Aliquip cupidatat ex adipisicing veniam do tempor. Lorem nulla adipisicing et esse cupidatat qui deserunt in fugiat duis est qui. Est adipisicing ipsum qui cupidatat exercitation. Cupidatat aliqua deserunt id deserunt excepteur nostrud culpa eu voluptate excepteur. Cillum officia proident anim aliquip. Dolore veniam qui reprehenderit voluptate non id anim.\r\n',
-    title:
-      'Deserunt laborum id consectetur pariatur veniam occaecat occaecat tempor voluptate pariatur nulla reprehenderit ipsum.',
-  },
-  {
-    _id: '5d2ca9e2e03d40b3232496aa7',
-    completed: true,
-    body:
-      'Occaecat non ea quis occaecat ad culpa amet deserunt incididunt elit fugiat pariatur. Exercitation commodo culpa in veniam proident laboris in. Excepteur cupidatat eiusmod dolor consectetur exercitation nulla aliqua veniam fugiat irure mollit. Eu dolor dolor excepteur pariatur aute do do ut pariatur consequat reprehenderit deserunt.\r\n',
-    title: 'Eu ea incididunt sunt consectetur fugiat non.',
-  },
-  {
-    _id: '5d2ca9e29c8a94095564788e0',
-    completed: false,
-    body:
-      'Aliquip cupidatat ex adipisicing veniam do tempor. Lorem nulla adipisicing et esse cupidatat qui deserunt in fugiat duis est qui. Est adipisicing ipsum qui cupidatat exercitation. Cupidatat aliqua deserunt id deserunt excepteur nostrud culpa eu voluptate excepteur. Cillum officia proident anim aliquip. Dolore veniam qui reprehenderit voluptate non id anim.\r\n',
-    title:
-      'Deserunt laborum id consectetur pariatur veniam occaecat occaecat tempor voluptate pariatur nulla reprehenderit ipsum.',
-  },
- */];
+  },*/
+];
 
 (function (arrOfTasks) {
   const objOfTasks = arrOfTasks.reduce((acc, task) => {
@@ -49,10 +26,13 @@ const tasks = [/*
   renderAllTasks(arrOfTasks)
   form.addEventListener('submit', onFormSubmitHandler)
   listContainer.addEventListener('click', onDeleteHandler)
+  listContainer.addEventListener('click', onDoneHandler)
+
+  anyTaskChecker()
 
   function renderAllTasks(taskList) {
-    if (!taskList) {
-      console.log('give task!');
+    if (!taskList.length) {
+      // no tasks - no further actions
       return;
     }
 
@@ -71,7 +51,8 @@ const tasks = [/*
       'd-flex',
       'align-items-center',
       'flex-wrap',
-      'mt-2'
+      'mt-2',
+      'bg-info'
     )
     li.setAttribute('data-task-id', _id)
 
@@ -79,14 +60,31 @@ const tasks = [/*
     span.textContent = title
     span.style.fontWeight = 'bold'
 
+    const taskDone = document.createElement('button')
+    taskDone.textContent = 'Done'
+    taskDone.classList.add(
+      'btn',
+      'btn-success',
+      'ml-auto',
+      'task-done-btn'
+    )
+    taskDone.setAttribute('data-task-id', _id)
+
     const deleteBtn = document.createElement('button')
     deleteBtn.textContent = 'Delete task'
     deleteBtn.classList.add(
       'btn',
       'btn-danger',
-      'ml-auto',
+      'ml-3',
       'delete-btn'
     )
+
+    const div = document.createElement('div')
+    div.classList.add(
+      'ml-auto'
+    )    
+    div.appendChild(taskDone)
+    div.appendChild(deleteBtn)
 
     const article = document.createElement('p')
     article.textContent = body
@@ -96,7 +94,7 @@ const tasks = [/*
     )
 
     li.appendChild(span)
-    li.appendChild(deleteBtn)
+    li.appendChild(div)
     li.appendChild(article)
 
     return li
@@ -104,16 +102,23 @@ const tasks = [/*
 
   function onFormSubmitHandler(e) {
     e.preventDefault();
-    const titleValue = inputTitle.value
-    const bodyValue = inputBody.value
+    let titleValue = inputTitle.value
+    let bodyValue = inputBody.value
 
-    if (!titleValue || !bodyValue) {
-      alert("E tumsoh body bilan title ga ubu narsa yozsen olasami o'ynashurmi")
+    if (!titleValue && !bodyValue) {
+      alert("Please, enter any kind of task into title or body! Otherwise, it's useless to create empty task.")
       return
+    }
+
+    if (!titleValue) {
+      titleValue = 'No Title for this task'
+    } else if (!bodyValue) {
+      bodyValue = 'No description for this task'
     }
 
     const task = createNewTask(titleValue, bodyValue)
     const listItem = ListItemTemplate(task)
+    anyTaskChecker()
     listContainer.insertAdjacentElement('afterbegin', listItem)
     form.reset()
   }
@@ -131,17 +136,29 @@ const tasks = [/*
     return { ...newTask }
   }
 
+  function onDoneHandler({ target }) {
+    if (target.classList.contains('task-done-btn')) {
+      const background = target.closest('.list-group-item')
+      background.classList.toggle('bg-info')
+      background.classList.toggle('bg-success')
+
+      console.log(this);
+      
+    }
+  }
+
   function deleteTask(id) {
     const { title } = objOfTasks[id]
-    const isConfirm = confirm(`tochna ${title} ochirmoqcimisan tumsoh?`)
+    const isConfirm = confirm(`Do you want to remove ${title}?`)
     if (!isConfirm) return isConfirm
     delete objOfTasks[id]
     return isConfirm
   }
 
   function deleteTaskFromHtml(confirmed, el) {
-    if (!confirmed) return 
+    if (!confirmed) return
     el.remove();
+    anyTaskChecker()
   }
 
   function onDeleteHandler({ target }) {
@@ -151,6 +168,37 @@ const tasks = [/*
 
       const confirmed = deleteTask(id)
       deleteTaskFromHtml(confirmed, parent)
+    }
+  }
+
+  function anyTaskChecker() {
+    if (listContainer.childElementCount === 0) {
+      const p = document.createElement('p')
+      p.textContent = 'No tasks left to do'
+      Object.assign(p.style, {
+        border: '1px solid rgba(0,0,0,.125)',
+        'border-radius': '3px',
+        background: 'rgba(23,134,23,.125)',
+        padding: '7px 0',
+        fontWeight: 'bold',
+        color: '#007bff'
+      })
+      p.classList.add(
+        'no-tasks',
+        'text-center',
+        'col-7',
+        'col-sm-6',
+        'm-auto'
+      )
+      listContainer.appendChild(p)
+    } else {
+      anyTaskRemove()
+    }
+  }
+
+  function anyTaskRemove() {
+    if (listContainer.children[0].tagName === "P") {
+      listContainer.children[0].remove()
     }
   }
 })(tasks);
