@@ -7,21 +7,32 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <link rel="stylesheet" href="style.css">
   <title>Todo List</title>
 </head>
 
-<body class="bg-dark">
+<body class="body">
+  <nav class="header navbar navbar-dark bg-primary">
+    <a class="navbar-brand">Airways Todolist</a>
+    <form class="form-inline">
+      <select class="form-control form-control-sm" id="themeSelect">
+        <option value="default">Theme Default</option>
+        <option value="light">Theme Light</option>
+        <option value="dark">Theme Dark</option>
+      </select>
+    </form>
+  </nav>
   <div class="form-section mt-5">
     <div class="container">
       <div class="row">
-        <div class="col col-8 mx-auto">
-          <div class="card bg-secondary">
+        <div class="col col-12 col-md-10 col-lg-8 mx-auto">
+          <div class="card card-bg">
             <div class="card-body">
-              <h5 class="card-title">Add new task</h5>
+              <h5 class="card-title text-center">ADD NEW TASK</h5>
               <form name="addTask">
-                <input type="text" name="title" id="title" class="form-control" placeholder="Task title" />
-                <input type="text" name="body" id="body" class="form-control mt-3" placeholder="Task body" />
-                <button type="submit" class="btn btn-primary mt-4">
+                <input type="text" name="title" id="title" class="form-control text-center" placeholder="Task title" />
+                <input type="text" name="body" id="body" class="form-control mt-3 text-center" placeholder="Describtion" />
+                <button type="submit" class="btn btn-primary mt-3">
                   Add task
                 </button>
               </form>
@@ -31,7 +42,7 @@
       </div>
     </div>
   </div>
-  <div class="tasks-list-section mt-5">
+  <div class="tasks-list-section mt-4">
     <div class="container">
       <ul class="list-group">
       </ul>
